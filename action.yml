@@ -1,13 +1,13 @@
-name: 'PyInstaller Matrix Builder'
-description: 'Compiles Python scripts into standalone executables for Windows, macOS, and Linux.'
+name: 'Cross-Platform-Python-Builder'
+description: 'Compiles Python folders into standalone executables for Windows, macOS, and Linux.'
 author: 'AYSemkiv'
 branding:
   icon: 'package'
   color: 'blue'
 
 inputs:
-  file_path:
-    description: 'Path to the Python file you want to build'
+  folder_path:
+    description: 'Path to the Python folder you want to build'
     required: true
     default: 'main.py'
   upload_destination:
