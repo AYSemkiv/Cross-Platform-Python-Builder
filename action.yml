@@ -9,6 +9,10 @@ inputs:
   folder_path:
     description: 'Path to the Python folder you want to build'
     required: true
+    default: 'src/'
+  main_file_path: 
+    description: 'Path to the main Python file in the folder you want to build'
+    required: true
     default: 'main.py'
   upload_destination:
     description: 'Where should the finished binary go? (actions-artifact or commit-to-repo-folder)'
@@ -41,15 +45,15 @@ runs:
         
         # Detect OS automatically in composite action
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          pyinstaller --onefile --name "${RAW_NAME}" --collect-all src "${{ inputs.repo_folder_path }}"
+          pyinstaller --onefile --name "${RAW_NAME}" --collect-all src "${{ inputs.folder_path }}" --scriptname "${{ inputs.main_file_path}}"
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          pyinstaller --onefile --windowed --name "${RAW_NAME}" --collect-all "${{ inputs.repo_folder_path }}"
+          pyinstaller --onefile --windowed --name "${RAW_NAME}" --collect-all "${{ inputs.folder_path }}" --scriptname "${{ inputs.main_file_path}}"
           cd dist
           zip -r "${RAW_NAME}.app.zip" "${RAW_NAME}.app"
           rm -rf "${RAW_NAME}.app"
           cd ..
         else
-          pyinstaller --onefile --name "${RAW_NAME}.bin" --collect-all "${{ inputs.folder_path }}"
+          pyinstaller --onefile --name "${RAW_NAME}.bin" --collect-all "${{ inputs.folder_path }}" --scriptname "${{ inputs.main_file_path}}"
         fi
 
     - name: Upload Finished Binary Artifact
