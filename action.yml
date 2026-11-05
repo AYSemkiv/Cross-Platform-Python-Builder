@@ -3,7 +3,7 @@ description: 'Compiles Python folders into standalone executables for Windows, m
 author: 'AYSemkiv'
 branding:
   icon: 'package'
-  color: 'blue'
+  color: 'red'
 
 inputs:
   folder_path:
@@ -62,7 +62,7 @@ runs:
         pyinstaller \
           --onefile \
           --name "$RAW_NAME" \
-          --add-data "$FOLDER_PATH${DATA_SEP}$FOLDER_PATH" \
+          --add-data "${FOLDER_PATH}${DATA_SEP}${FOLDER_PATH}" \
           --runtime-hook "$RUNNER_TEMP/ays_path_hook.py" \
           "$MAIN_FILE_PATH"
 
