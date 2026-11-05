@@ -41,20 +41,31 @@ runs:
     - name: Run PyInstaller on Selected File
       shell: bash
       run: |
-        RAW_NAME=$(basename "${{ inputs.file_path }}" | cut -f 1 -d '.')
-        
-        # Detect OS automatically in composite action
+      
+        RAW_NAME=$(basename "$MAIN_FILE_PATH")
+        RAW_NAME="${RAW_NAME%.*}"
+
+        # PyInstaller uses different data separators on Windows.
+        DATA_SEP=":"
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          pyinstaller --onefile --name "${RAW_NAME}" --collect-all src "${{ inputs.folder_path }}" scriptname "${{ inputs.main_file_path}}"
-        elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          pyinstaller --onefile --windowed --name "${RAW_NAME}" --collect-all "${{ inputs.folder_path }}" scriptname "${{ inputs.main_file_path}}"
-          cd dist
-          zip -r "${RAW_NAME}.app.zip" "${RAW_NAME}.app"
-          rm -rf "${RAW_NAME}.app"
-          cd ..
-        else
-          pyinstaller --onefile --name "${RAW_NAME}.bin" --collect-all "${{ inputs.folder_path }}" scriptname "${{ inputs.main_file_path}}"
+        DATA_SEP=";"
         fi
+
+        # Create a runtime hook so bundled Python files can be imported.
+        cat > "$RUNNER_TEMP/ays_path_hook.py" <<'PY'
+        import sys
+        import os
+
+        sys.path.insert(0, sys._MEIPASS)
+        PY
+
+        pyinstaller \
+          --onefile \
+          --name "$RAW_NAME" \
+          --add-data "$FOLDER_PATH${DATA_SEP}$FOLDER_PATH" \
+          --add-data "api.py${DATA_SEP}." \
+          --runtime-hook "$RUNNER_TEMP/ays_path_hook.py" \
+          "$MAIN_FILE_PATH"
 
     - name: Upload Finished Binary Artifact
       if: ${{ inputs.upload_destination == 'actions-artifact' }}
