@@ -41,15 +41,15 @@ runs:
         
         # Detect OS automatically in composite action
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          pyinstaller --onefile --name "${RAW_NAME}.exe" "${{ inputs.file_path }}"
+          pyinstaller --onefile --name "${RAW_NAME}" --collect-all src "${{ inputs.file_path }}"
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          pyinstaller --onefile --windowed --name "${RAW_NAME}" "${{ inputs.file_path }}"
+          pyinstaller --onefile --windowed --name "${RAW_NAME}" --collect-all "${{ inputs.file_path }}"
           cd dist
           zip -r "${RAW_NAME}.app.zip" "${RAW_NAME}.app"
           rm -rf "${RAW_NAME}.app"
           cd ..
         else
-          pyinstaller --onefile --name "${RAW_NAME}.bin" "${{ inputs.file_path }}"
+          pyinstaller --onefile --name "${RAW_NAME}.bin" -collect-all "${{ inputs.file_path }}"
         fi
 
     - name: Upload Finished Binary Artifact
