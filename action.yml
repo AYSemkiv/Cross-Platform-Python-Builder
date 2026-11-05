@@ -63,7 +63,6 @@ runs:
           --onefile \
           --name "$RAW_NAME" \
           --add-data "$FOLDER_PATH${DATA_SEP}$FOLDER_PATH" \
-          --add-data "api.py${DATA_SEP}." \
           --runtime-hook "$RUNNER_TEMP/ays_path_hook.py" \
           "$MAIN_FILE_PATH"
 
